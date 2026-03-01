@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Qython v1.0.0</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="popup-mode">
+    <div id="app">
+      <!-- TITLEBAR -->
+      <div id="titlebar">
+        <span id="tb-logo">⬡</span>
+        <span id="tb-name">Qython</span>
+        <div id="tb-tabs">
+          <button class="tab active" data-tab="terminal">Terminal</button>
+          <button class="tab" data-tab="editor">Editor</button>
+          <button class="tab" data-tab="vars">Vars</button>
+          <button class="tab" data-tab="packages">Pkg</button>
+          <button class="tab" data-tab="history">History</button>
+        </div>
+        <div id="tb-right">
+          <span id="sdot" class="dot-loading"></span>
+          <span id="slbl">loading</span>
+          <button
+            class="ibtn"
+            id="btnExpand"
+            title="Open in full tab [Ctrl+Shift+F]"
+          >
+            ⛶
+          </button>
+          <button class="ibtn" id="btnPalette" title="Command Palette [Ctrl+P]">
+            ⌘
+          </button>
+          <button class="ibtn" id="btnSettings" title="Settings [Ctrl+,]">
+            ⚙
+          </button>
+        </div>
+      </div>
+
+      <!-- SETTINGS BAR -->
+      <div id="settings" style="display: none">
+        <div class="srow">
+          <span class="slabel">Font</span>
+          <button class="sbtn" id="fntDec">−</button>
+          <span id="fntVal">12</span>
+          <button class="sbtn" id="fntInc">+</button>
+        </div>
+        <div class="srow">
+          <span class="slabel">Theme</span>
+          <button class="sbtn active-theme" id="tDark">Dark</button>
+          <button class="sbtn" id="tLight">Light</button>
+        </div>
+        <div class="srow">
+          <span class="slabel">Auto-scroll</span>
+          <label class="tog"
+            ><input type="checkbox" id="optScroll" checked /><span
+              class="ttrack"
+            ></span
+          ></label>
+          <span class="slabel" style="margin-left: 10px">Lines</span>
+          <label class="tog"
+            ><input type="checkbox" id="optLines" checked /><span
+              class="ttrack"
+            ></span
+          ></label>
+        </div>
+      </div>
+
+      <!-- COMMAND PALETTE -->
+      <div id="palette" style="display: none">
+        <input
+          id="palInput"
+          type="text"
+          placeholder="Search commands…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <div id="palList"></div>
+        <div id="palFooter">
+          <kbd>↑↓</kbd> navigate &nbsp;<kbd>Enter</kbd> run &nbsp;<kbd>Esc</kbd>
+          close
+        </div>
+      </div>
+
+      <!-- INPUT() MODAL -->
+      <div id="input-overlay" style="display: none">
+        <div id="input-modal">
+          <div id="input-modal-header">
+            <span id="input-modal-icon">&#x2328;</span>
+            <span id="input-modal-title">input()</span>
+          </div>
+          <div id="input-prompt-label"></div>
+          <input
+            id="input-field"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Type and press Enter&#x2026;"
+          />
+          <div id="input-actions">
+            <button id="inputCancel" class="modal-btn cancel">
+              Cancel <kbd>Esc</kbd>
+            </button>
+            <button id="inputConfirm" class="modal-btn confirm">
+              Confirm <kbd>Enter</kbd>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUTOCOMPLETE -->
+      <div id="ac" style="display: none"></div>
+
+      <!-- TERMINAL PANEL -->
+      <div class="panel active" id="panel-terminal">
+        <div id="findbar" style="display: none">
+          <input
+            id="findInput"
+            type="text"
+            placeholder="Find in output…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <span id="findCount"></span>
+          <button class="ibtn" id="findPrev" title="Previous [Shift+F3]">
+            ↑
+          </button>
+          <button class="ibtn" id="findNext" title="Next [F3]">↓</button>
+          <label class="find-opt" title="Case sensitive"
+            ><input type="checkbox" id="findCase" /><span>Aa</span></label
+          >
+          <label class="find-opt" title="Regular expression"
+            ><input type="checkbox" id="findRegex" /><span>.*</span></label
+          >
+          <button class="ibtn" id="findClose" title="Close [Esc]">✕</button>
+        </div>
+        <div id="output"></div>
+        <div id="inputbar" class="state-loading">
+          <span id="iprompt">&gt;</span>
+          <textarea
+            id="inp"
+            rows="1"
+            disabled
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="Enter Python…  Shift+Enter=newline  Tab=autocomplete  clear=wipe screen"
+          ></textarea>
+          <span id="ispinner" style="display: none">
+            <i class="d1"></i><i class="d2"></i><i class="d3"></i>
+          </span>
+        </div>
+        <div id="statusbar">
+          <span id="stmsg">Initialising Pyodide…</span>
+          <span id="stkeys"
+            ><kbd>Ctrl+F</kbd> find &nbsp;<kbd>Ctrl+P</kbd> palette &nbsp;<kbd
+              >Alt+↑↓</kbd
+            >
+            scroll &nbsp;<kbd>Alt+1-5</kbd> tabs</span
+          >
+          <span id="stright"
+            ><span id="sttime"></span><span id="stln">ln:0</span></span
+          >
+        </div>
+      </div>
+
+      <!-- EDITOR PANEL -->
+      <div class="panel" id="panel-editor">
+        <div class="toolbar">
+          <button class="tbtn run" id="edRun">▶ Run</button>
+          <button class="tbtn" id="edClear">⊘ Clear</button>
+          <div class="tsep"></div>
+          <button class="tbtn" id="edSave">↓ .py</button>
+          <button class="tbtn" id="edLoad">↑ Load</button>
+          <input type="file" id="edFile" accept=".py" style="display: none" />
+          <button class="tbtn" id="edFmt">⟳ Trim</button>
+          <span class="thint">Ctrl+Enter run · Tab=4sp · Shift+Tab dedent</span>
+        </div>
+        <div id="ed-wrap">
+          <div id="ed-gutter">1</div>
+          <textarea
+            id="edTa"
+            spellcheck="false"
+            autocorrect="off"
+            autocapitalize="off"
+            placeholder="# Write Python here&#10;def greet(name):&#10;    return f'Hello {name}'&#10;print(greet('world'))"
+          ></textarea>
+        </div>
+        <div id="ed-resizer"></div>
+        <div id="ed-out">
+          <div id="ed-out-bar">
+            <span>Output</span>
+            <button class="ibtn" id="edCpOut" title="Copy">⎘</button>
+            <button class="ibtn" id="edClOut" title="Clear">⊘</button>
+          </div>
+          <pre id="ed-pre">Run a script to see output…</pre>
+        </div>
+      </div>
+
+      <!-- VARS PANEL -->
+      <div class="panel" id="panel-vars">
+        <div class="toolbar">
+          <button class="tbtn" id="varsRef">↻ Refresh</button>
+          <input
+            class="sinput"
+            id="varsSrch"
+            type="text"
+            placeholder="Filter variables…"
+            style="flex: 1"
+          />
+          <span id="varsCnt" class="thint">—</span>
+        </div>
+        <div id="vars-head">
+          <span>Name</span><span>Type</span><span>Value</span><span></span>
+        </div>
+        <div id="vars-body"></div>
+      </div>
+
+      <!-- PACKAGES PANEL -->
+      <div class="panel" id="panel-packages">
+        <div class="toolbar">
+          <input
+            class="sinput"
+            id="pkgName"
+            type="text"
+            placeholder="Package name e.g. numpy, pandas, sympy…"
+            style="flex: 1"
+          />
+          <button class="tbtn run" id="pkgBtn">Install</button>
+        </div>
+        <div id="pkg-log"></div>
+        <div id="pkg-foot">
+          <div class="pkg-label">Installed this session</div>
+          <div id="pkg-tags"></div>
+        </div>
+      </div>
+
+      <!-- HISTORY PANEL -->
+      <div class="panel" id="panel-history">
+        <div class="toolbar">
+          <input
+            class="sinput"
+            id="histSrch"
+            type="text"
+            placeholder="Search history…"
+            style="flex: 1"
+          />
+          <button class="tbtn" id="histTxt">↓ .txt</button>
+          <button class="tbtn" id="histPy">↓ .py</button>
+          <button class="tbtn danger" id="histDel">Delete all</button>
+        </div>
+        <div id="hist-body"></div>
+      </div>
+    </div>
+    <!-- #app -->
+    <link rel="stylesheet" href="theme.css" />
+    <script src="highlight.js"></script>
+    <script src="pyodide/pyodide.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

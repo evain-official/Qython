@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Qython",
+  "version": "1.0.0",
+  "description": "Local Python 3 terminal powered by Pyodide. No server, no internet needed.",
+  "author": "Qython",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Qython \u2013 Local Python Terminal"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "tabs"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "pyodide/*",
+        "highlight.js",
+        "theme.css",
+        "app.html",
+        "style.css",
+        "popup.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}
